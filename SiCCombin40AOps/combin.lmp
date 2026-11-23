@@ -1,0 +1,107 @@
+# REAX potential for SiC system
+units                         real
+atom_style               full
+boundary                 p p f
+timestep                  0.25
+
+read_data               anne.data extra/atom/types 1
+change_box             all z final 0 80 units box
+displace_atoms       all move 0.0 0.0 2.0 units box
+
+pair_style                 reaxff NULL
+pair_coeff                 * * ffield.reax.choSiC.txt c Si  o
+
+
+neighbor                  2.0 bin
+neigh_modify           every 1 delay 0 check yes
+fix                             qeq all qeq/reaxff 1 0.0 10.0 1.0e-6 reaxff
+ 
+region                      L0 block INF INF INF INF 0.0 2.0 units box
+region                      L1 block INF INF INF INF 2.0 42.0 units box            #siC
+region                      L2 block INF INF INF INF 42.0 72.0 units box
+region                      L3 block -0.769479393 39.244520607 -0.666403925 36.652396075 67.0 72.0 units box
+region                      L4 block INF INF INF INF 72.0 77.0 units box
+
+mass                        1  12.0112         #1 C
+mass                        2  28.086           #2 Si
+mass                        3  15.9994         #3 O
+
+
+group                     substrate type 1 2
+group                     gl1  region L1
+group                     gl0  dynamic all region L0
+group                     gl3  type 3 
+
+fix                            f_nve all nve
+variable                   nbase equal count(substrate)
+group                      impinge id > ${nbase}
+
+
+compute                   1 all ave/sphere/atom cutoff 2.0
+#compute                    KE   all ke/atom 
+#variable                     KB   equal 8.625e-5 
+#variable                     TEMP atom c_KE/1.5/${KB} 
+
+thermo                     100
+thermo_style            custom step time temp pe ke vol lx ly lz density pxx pyy pzz
+
+#========== Minimization==========
+dump                       1 all custom 100 Mini.lammpstrj id mass mol type xu yu zu c_1[2]
+velocity                    all create 300 123456
+min_style                  cg
+minimize                  1e-6 1e-6 10000 10000
+undump                   1
+write_data                Mini.data
+reset_timestep         0
+
+
+velocity                  all create 300 12345 dist gaussian
+
+fix                           zwall all wall/reflect zlo 0.0 zhi 80.0
+region                    temp_zone block -0.769479393 39.244520607 -0.666403925 36.652396075 2 8 units box
+group                     thermostat dynamic all region temp_zone
+fix                           f_therm thermostat langevin 300 300 1000 12345
+
+region                    nve_top block -0.769479393 39.244520607 -0.666403925 36.652396075 2 72 units box
+group                     nvetop dynamic all region nve_top
+fix                           f_nve nvetop nve
+
+velocity                    gl0 set 0.0 0.0 0.0
+fix                            gl0_fixed gl0 setforce 0.0 0.0 0.0
+
+thermo                  100
+thermo_style         custom step time temp pe ke vol lx ly lz density pxx pyy pzz
+dump                    bomb_dump all custom 100 bomb.lammpstrj id type x y z vx vy vz q  c_1[2]
+dump_modify       bomb_dump   sort id element C Si O
+
+
+group             allgroup dynamic all region L1
+compute         all_atoms allgroup property/atom mass
+compute         mass_all allgroup reduce sum c_all_atoms
+variable          allmass equal c_mass_all
+
+variable          c_type atom (type==1)
+group             cgroup dynamic all var c_type region L1
+variable          catom_number equal count(cgroup)
+
+variable           o_type atom id>${nbase}
+group              ogroup dynamic all var o_type region L1
+variable           oatom_number equal count(ogroup)
+
+
+compute          o_z ogroup property/atom z
+compute         ovgz ogroup reduce sum c_o_z
+variable          avg_depth equal c_ovgz/(count(ogroup)+1e-30)
+
+variable                step  equal step
+variable                T equal temp
+
+fix                   out_norm all print 100 "${step} ${T} ${allmass} ${catom_number} ${oatom_number} ${avg_depth}" file norm_mass.txt screen no
+
+variable                   E_impact equal 5
+variable                   v_mag equal 0.03473*sqrt(${E_impact})
+
+fix                           deposit gl3 deposit 4000 3 100 12345 region L3 near 0 vz -${v_mag} -${v_mag}
+fix                         evaporate all evaporate 100 1000000 L4 49892
+run                       400000
+write_data             deposit.data

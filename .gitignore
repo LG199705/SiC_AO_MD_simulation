@@ -1,0 +1,17 @@
+# OS / editor files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+
+# Generated LAMMPS outputs
+*.lammpstrj
+log.lammps
+norm_mass.txt
+
+# Archives
+*.rar
+
+# Python cache
+__pycache__/
+*.py[cod]

@@ -1,0 +1,8 @@
+﻿case_id,series,incident_energy_eV,ao_flux_AOps,deposit_insertions,production_steps,timestep_fs,production_time_ps,dump_interval_steps,initial_atoms,final_atoms,public_trajectory
+SiCCombin5eV5AOps,energy,5,5,500,400000,0.25,100,1000,5824,6288,no
+SiCCombin10eV,energy,10,5,500,400000,0.25,100,1000,5824,6297,no
+SiCCombin20eV,energy,20,5,500,400000,0.25,100,1000,5824,2765,no
+SiCCombin30eV,energy,30,5,500,400000,0.25,100,1000,5824,2797,no
+SiCCombin10AOps,flux,5,10,1000,400000,0.25,100,1000,5824,2791,no
+SiCCombin20AOps,flux,5,20,2000,400000,0.25,100,1000,5824,3185,no
+SiCCombin40AOps,flux,5,40,4000,400000,0.25,100,100,5824,3212,excluded_from_github
