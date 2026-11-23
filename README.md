@@ -45,15 +45,15 @@ and placed in each case directory before running a simulation. See
 
 The confirmed nominal conditions are:
 
-| Case | Incident energy (eV) | Nominal AO flux (AOs/ps) | Deposit insertions | Final atoms |
-|---|---:|---:|---:|---:|
-| `SiCCombin5eV5AOps` | 5 | 5 | 500 | 6288 |
-| `SiCCombin10eV` | 10 | 5 | 500 | 6297 |
-| `SiCCombin20eV` | 20 | 5 | 500 | 2765 |
-| `SiCCombin30eV` | 30 | 5 | 500 | 2797 |
-| `SiCCombin10AOps` | 5 | 10 | 1000 | 2791 |
-| `SiCCombin20AOps` | 5 | 20 | 2000 | 3185 |
-| `SiCCombin40AOps` | 5 | 40 | 4000 | 3212 |
+| Case | Incident energy (eV) | Nominal AO flux (AOs/ps) | Final atoms |
+|---|---:|---:|---:|
+| `SiCCombin5eV5AOps` | 5 | 5 | 6288 |
+| `SiCCombin10eV` | 10 | 5 | 6297 |
+| `SiCCombin20eV` | 20 | 5 | 2765 |
+| `SiCCombin30eV` | 30 | 5 | 2797 |
+| `SiCCombin10AOps` | 5 | 10 | 2791 |
+| `SiCCombin20AOps` | 5 | 20 | 3185 |
+| `SiCCombin40AOps` | 5 | 40 | 3212 |
 
 A machine-readable version, including the initial atom count, timestep, run
 length, and trajectory availability, is provided in
